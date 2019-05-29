@@ -594,7 +594,584 @@ apt remove -y ldap-utils
 # 3.1.1 Ensure IP forwarding is disabled (Scored)
 # 3.1.2 Ensure packet redirect sending is disabled (Scored)
 
-# This are only required if the system is to act as a host only.  If needed, run the workstation_cis_hardening_level1_scored_HOSTONLY.sh script to apply these controls
+# This are only required if the system is to act as a host only.  If needed, run the 'workstation_cis_hardening_level1_scored_HOSTONLY.sh' script to apply these controls
+
+#########################################################################################################################################
+
+# 3.2.1 Ensure source routed packets are not accepted (Scored)
+
+echo "[i] Ensuring source routed packets are not accepted"
+
+if grep -q "^net.ipv4.conf.all.accept_source_route" /etc/sysctl.conf; then 
+	sed -i 's/^net.ipv4.conf.all.accept_source_route.*/net.ipv4.conf.all.accept_source_route = 0/' /etc/sysctl.conf
+else
+    echo "net.ipv4.conf.all.accept_source_route = 0" >> /etc/sysctl.conf
+fi
+
+if grep -q "^net.ipv4.conf.default.accept_source_route" /etc/sysctl.conf; then 
+	sed -i 's/^net.ipv4.conf.default.accept_source_route.*/net.ipv4.conf.default.accept_source_route = 0/' /etc/sysctl.conf
+else
+    echo "net.ipv4.conf.default.accept_source_route = 0" >> /etc/sysctl.conf
+fi
+
+sysctl -w net.ipv4.conf.all.accept_source_route=0
+sysctl -w net.ipv4.conf.default.accept_source_route=0
+sysctl -w net.ipv4.route.flush=1
+
+#########################################################################################################################################
+
+# 3.2.2 Ensure ICMP redirects are not accepted (Scored)
+
+echo "[i] Ensuring ICMP redirects are not accepted"
+
+if grep -q "^net.ipv4.conf.all.accept_redirects" /etc/sysctl.conf; then 
+	sed -i 's/^net.ipv4.conf.all.accept_redirects.*/net.ipv4.conf.all.accept_redirects = 0/' /etc/sysctl.conf
+else
+    echo "net.ipv4.conf.all.accept_redirects = 0" >> /etc/sysctl.conf
+fi
+
+if grep -q "^net.ipv4.conf.default.accept_redirects" /etc/sysctl.conf; then 
+	sed -i 's/^net.ipv4.conf.default.accept_redirects.*/net.ipv4.conf.default.accept_redirects = 0/' /etc/sysctl.conf
+else
+    echo "net.ipv4.conf.default.accept_redirects = 0" >> /etc/sysctl.conf
+fi
+
+sysctl -w net.ipv4.conf.all.accept_redirects=0
+sysctl -w net.ipv4.conf.default.accept_redirects=0
+sysctl -w net.ipv4.route.flush=1
+
+#########################################################################################################################################
+
+# 3.2.3 Ensure secure ICMP redirects are not accepted (Scored)
+
+echo "[i] Ensuring secure ICMP redirects are not accepted"
+
+if grep -q "^net.ipv4.conf.all.secure_redirects" /etc/sysctl.conf; then 
+	sed -i 's/^net.ipv4.conf.all.secure_redirects.*/net.ipv4.conf.all.secure_redirects = 0/' /etc/sysctl.conf
+else
+    echo "net.ipv4.conf.all.secure_redirects = 0" >> /etc/sysctl.conf
+fi
+
+if grep -q "^net.ipv4.conf.default.secure_redirects" /etc/sysctl.conf; then 
+	sed -i 's/^net.ipv4.conf.default.secure_redirects.*/net.ipv4.conf.default.secure_redirects = 0/' /etc/sysctl.conf
+else
+    echo "net.ipv4.conf.default.secure_redirects = 0" >> /etc/sysctl.conf
+fi
+
+sysctl -w net.ipv4.conf.all.secure_redirects=0
+sysctl -w net.ipv4.conf.default.secure_redirects=0
+sysctl -w net.ipv4.route.flush=1
+
+#########################################################################################################################################
+
+# 3.2.4 Ensure suspicious packets are logged (Scored)
+
+echo "[i] Ensuring suspicious packets are logged"
+
+if grep -q "^net.ipv4.conf.all.log_martians" /etc/sysctl.conf; then 
+	sed -i 's/^net.ipv4.conf.all.log_martians.*/net.ipv4.conf.all.log_martians = 1/' /etc/sysctl.conf
+else
+    echo "net.ipv4.conf.all.log_martians = 1" >> /etc/sysctl.conf
+fi
+
+if grep -q "^net.ipv4.conf.default.log_martians" /etc/sysctl.conf; then 
+	sed -i 's/^net.ipv4.conf.default.log_martians.*/net.ipv4.conf.default.log_martians = 1/' /etc/sysctl.conf
+else
+    echo "net.ipv4.conf.default.log_martians = 1" >> /etc/sysctl.conf
+fi
+
+sysctl -w net.ipv4.conf.all.log_martians=1
+sysctl -w net.ipv4.conf.default.log_martians=1
+sysctl -w net.ipv4.route.flush=1
+
+#########################################################################################################################################
+
+# 3.2.5 Ensure broadcast ICMP requests are ignored (Scored)
+
+echo "[i] Ensuring broadcast ICMP requests are ignored"
+
+if grep -q "^net.ipv4.icmp_echo_ignore_broadcasts" /etc/sysctl.conf; then 
+	sed -i 's/^net.ipv4.icmp_echo_ignore_broadcasts.*/net.ipv4.icmp_echo_ignore_broadcasts = 1/' /etc/sysctl.conf
+else
+    echo "net.ipv4.icmp_echo_ignore_broadcasts = 1" >> /etc/sysctl.conf
+fi
+
+sysctl -w net.ipv4.icmp_echo_ignore_broadcasts=1
+sysctl -w net.ipv4.route.flush=1
+
+#########################################################################################################################################
+
+# 3.2.6 Ensure bogus ICMP responses are ignored (Scored)
+
+echo "[i] Ensuring bogus ICMP responses are ignored"
+
+if grep -q "^net.ipv4.icmp_ignore_bogus_error_responses" /etc/sysctl.conf; then 
+	sed -i 's/^net.ipv4.icmp_ignore_bogus_error_responses.*/net.ipv4.icmp_ignore_bogus_error_responses = 1/' /etc/sysctl.conf
+else
+    echo "net.ipv4.icmp_ignore_bogus_error_responses = 1" >> /etc/sysctl.conf
+fi
+
+sysctl -w net.ipv4.icmp_ignore_bogus_error_responses=1
+sysctl -w net.ipv4.route.flush=1
+
+#########################################################################################################################################
+
+# 3.2.7 Ensure Reverse Path Filtering is enabled (Scored)
+
+echo "[i] Ensuring Reverse Path Filtering is enabled"
+
+if grep -q "^net.ipv4.conf.all.rp_filter" /etc/sysctl.conf; then 
+	sed -i 's/^net.ipv4.conf.all.rp_filter.*/net.ipv4.conf.all.rp_filter = 1/' /etc/sysctl.conf
+else
+    echo "net.ipv4.conf.all.rp_filter = 1" >> /etc/sysctl.conf
+fi
+
+if grep -q "^net.ipv4.conf.default.rp_filter" /etc/sysctl.conf; then 
+	sed -i 's/^net.ipv4.conf.default.rp_filter.*/net.ipv4.conf.default.rp_filter = 1/' /etc/sysctl.conf
+else
+    echo "net.ipv4.conf.default.rp_filter = 1" >> /etc/sysctl.conf
+fi
+
+sysctl -w net.ipv4.conf.all.rp_filter=1
+sysctl -w net.ipv4.conf.default.rp_filter=1
+sysctl -w net.ipv4.route.flush=1
+
+#########################################################################################################################################
+
+# 3.2.8 Ensure TCP SYN Cookies is enabled (Scored)
+
+echo "[i] Ensuring TCP SYN Cookies is enabled"
+
+if grep -q "^net.ipv4.tcp_syncookies" /etc/sysctl.conf; then 
+	sed -i 's/^net.ipv4.tcp_syncookies.*/net.ipv4.tcp_syncookies = 1/' /etc/sysctl.conf
+else
+    echo "net.ipv4.tcp_syncookies = 1" >> /etc/sysctl.conf
+fi
+
+sysctl -w net.ipv4.tcp_syncookies=1
+sysctl -w net.ipv4.route.flush=1
+
+#########################################################################################################################################
+
+# 3.4.1 Ensure TCP Wrappers is installed (Scored)
+
+echo "[i] Installing TCP Wrappers"
+
+apt install -y tcpd
+
+#########################################################################################################################################
+
+# 3.4.2 Ensure /etc/hosts.allow is configured (Scored)
+
+# This control is dependent on the individual organisation so will need to be set manually
+# By default, nothing is in the hosts.allow so when we generate the hosts.deny in the next section, no IP addresses with be permitted to connect with the host
+
+#########################################################################################################################################
+
+# 3.4.3 Ensure /etc/hosts.deny is configured (Scored)
+
+echo "[i] The hosts.deny file is being created with a default 'deny all' rule"
+
+echo "ALL: ALL" >> /etc/hosts.deny
+
+#########################################################################################################################################
+
+# 3.4.4 Ensure permissions on /etc/hosts.allow are configured (Scored)
+
+echo "[i] Setting the correct permissions for the 'hosts.allow' file"
+
+chown root:root /etc/hosts.allow
+chmod 644 /etc/hosts.allow
+
+#########################################################################################################################################
+
+# 3.4.4 Ensure permissions on /etc/hosts.deny are configured (Scored)
+
+echo "[i] Setting the correct permissions for the 'hosts.deny' file"
+
+chown root:root /etc/hosts.deny
+chmod 644 /etc/hosts.deny
+
+#########################################################################################################################################
+
+# 3.6.1 Ensure iptables is installed (Scored)
+# 3.6.2 Ensure default deny firewall policy (Scored)
+# 3.6.3 Ensure loopback traffic is configured (Scored)
+# 3.6.5 Ensure firewall rules exist for all open ports (Scored)
+
+echo "[i] Installing iptables"
+
+apt install -y iptables
+
+echo "[i] Flushing iptable rules"
+iptables -F
+
+echo "[i] Adding default deny firewall policy"
+iptables -P INPUT DROP
+iptables -P OUTPUT DROP 
+iptables -P FORWARD DROP 
+
+echo "[i] Configuring loopback traffic rules within firewall policy"
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A OUTPUT -o lo -j ACCEPT
+iptables -A INPUT -s 127.0.0.0/8 -j DROP
+
+echo "[i] Opening inbound ssh (tcp port 22) connections within the firewall policy" 
+iptables -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
+
+echo "[i] All additional rules will need to be added manually if required"
+
+#########################################################################################################################################
+
+# 4.2.1.1 Ensure rsyslog Service is enabled (Scored)
+# 4.2.3 Ensure rsyslog or syslog-ng is installed
+
+# Although 4.2.3 should come later, rsyslog needs to be confirmed as installed now otherwise the other controls would fail 
+
+apt install -y rsyslog
+apt install -y syslog-ng
+
+echo "[i] Enabling rsyslog service"
+
+systemctl enable rsyslog
+
+#########################################################################################################################################
+
+# 4.2.1.3 Ensure rsyslog default file permissions configured (Scored)
+
+echo "[i] Configuring rsyslog default file permissions"
+
+if grep -q "^$FileCreateMode" /etc/sysctl.conf; then 
+	sed -i 's/^$FileCreateMode.*/$FileCreateMode 0640/' /etc/sysctl.conf
+else
+    echo "$FileCreateMode 0640" >> /etc/sysctl.conf
+fi
+
+#########################################################################################################################################
+
+# 4.2.1.4 Ensure rsyslog is configured to send logs to a remote log host server (Scored)
+
+# This requires the system administrator to manually add the url of a log host
+
+#########################################################################################################################################
+
+# 4.2.2.1 Ensure syslog-ng service is enabled (Scored)
+
+echo "[i] Enabling syslog-ng service"
+
+update-rc.d syslog-ng enable
+
+#########################################################################################################################################
+
+# 4.2.2.3 Ensure syslog-ng default file permissions configured (Scored)
+
+echo "[i] Configuring the syslog-ng default file permissions"
+
+if grep -q "^options {" /etc/syslog-ng/syslog-ng.conf; then 
+	sed -i 's/^options {.*/options { chain_hostnames(off); flush_lines(0); perm(0640); stats_freq(3600); threaded(yes); };/' /etc/syslog-ng/syslog-ng.conf
+else
+    echo "options { chain_hostnames(off); flush_lines(0); perm(0640); stats_freq(3600); threaded(yes); };" >> /etc/syslog-ng/syslog-ng.conf
+fi
+
+#########################################################################################################################################
+
+# 4.2.3 Ensure rsyslog or syslog-ng is installed
+
+# The installation was already carried out during the '4.2.1.1' control above
+
+#########################################################################################################################################
+
+# 4.2.4 Ensure permissions on all logfiles are configured (Scored)
+
+echo "[i] Setting correct permissions on all log files"
+
+chmod -R g-wx, o-rwx /var/log/*
+
+#########################################################################################################################################
+
+# 5.1.1 Ensure cron daemon is enabled (Scored)
+
+echo "[i] Enabling the cron daemon"
+
+systemctl enable cron
+
+#########################################################################################################################################
+
+# 5.1.2 Ensure permissions on /etc/crontab are configured (Scored)
+
+echo "[i] Setting the correct permissions on /etc/crontab"
+
+chown root:root /etc/crontab
+chmod og-rwx /etc/crontab
+
+#########################################################################################################################################
+
+# 5.1.3 Ensure permissions on /etc/cron.hourly are configured (Scored)
+
+echo "[i] Setting the correct permissions on /etc/cron.hourly"
+
+chown root:root /etc/cron.hourly
+chmod og-rwx /etc/cron.hourly
+
+#########################################################################################################################################
+
+# 5.1.4 Ensure permissions on /etc/cron.daily are configured (Scored)
+
+echo "[i] Setting the correct permissions on /etc/cron.daily"
+
+chown root:root /etc/cron.daily
+chmod og-rwx /etc/cron.daily
+
+#########################################################################################################################################
+
+# 5.1.5 Ensure permissions on /etc/cron.weekly are configured (Scored)
+
+echo "[i] Setting the correct permissions on /etc/cron.weekly"
+
+chown root:root /etc/cron.weekly
+chmod og-rwx /etc/cron.weekly
+
+#########################################################################################################################################
+
+# 5.1.6 Ensure permissions on /etc/cron.monthly are configured (Scored)
+
+echo "[i] Setting the correct permissions on /etc/cron.monthly"
+
+chown root:root /etc/cron.monthly
+chmod og-rwx /etc/cron.monthly
+
+#########################################################################################################################################
+
+# 5.1.7 Ensure permissions on /etc/cron.d are configured (Scored)
+
+echo "[i] Setting the correct permissions on /etc/cron.d"
+
+chown root:root /etc/cron.d
+chmod og-rwx /etc/cron.d
+
+#########################################################################################################################################
+
+# 5.1.8 Ensure at/cron is restricted to authorized users (Scored)
+
+echo "[i] Restricting at/cron to authorised users"
+
+rm /etc/cron.deny
+rm /etc/at.deny
+touch /etc/cron.allow
+touch /etc/at.allow
+chmod og-rwx /etc/cron.allow
+chmod og-rwx /etc/at.allow
+chown root:root /etc/cron.allow
+chown root:root /etc/at.allow
+
+#########################################################################################################################################
+
+# 5.2.1 Ensure permissions on /etc/ssh/sshd_config are configured correctly (Scored)
+
+echo "[i] Setting correct permission on /etc/ssh/sshd_config"
+
+chown root:root /etc/ssh/sshd_config
+chmod og-rwx /etc/ssh/sshd_config
+
+#########################################################################################################################################
+
+# 5.2.2 Ensure SSH Protocol is set to 2 (Scored)
+
+echo "[i] Ensuring SSH Protocol is set to 2"
+
+if grep -q "^Protocol" /etc/ssh/sshd_config; then 
+	sed -i 's/^Protocol.*/Protocol 2/' /etc/ssh/sshd_config
+else
+    echo "Protocol 2" >> /etc/ssh/sshd_config
+fi
+
+#########################################################################################################################################
+
+# 5.2.3 Ensure SSH LogLevel is set to INFO (Scored)
+
+echo "[i] Ensuring SSH LogLevel is set to INFO"
+
+if grep -q "^LogLevel" /etc/ssh/sshd_config; then 
+	sed -i 's/^LogLevel.*/LogLevel INFO/' /etc/ssh/sshd_config
+else
+    echo "LogLevel INFO" >> /etc/ssh/sshd_config
+fi
+
+#########################################################################################################################################
+
+# 5.2.4 Ensure SSH X11 forwarding is disabled (Scored)
+
+echo "[i] Disabling SSH X11 forwarding"
+
+if grep -q "^X11Forwarding" /etc/ssh/sshd_config; then 
+	sed -i 's/^X11Forwarding.*/X11Forwarding no/' /etc/ssh/sshd_config
+else
+    echo "X11Forwarding No" >> /etc/ssh/sshd_config
+fi
+
+#########################################################################################################################################
+
+# 5.2.5 Ensure SSH MaxAuthTries is set to 4 or less (Scored)
+
+echo "[i] Setting SSH MaxAuthTries to 4"
+
+if grep -q "^MaxAuthTries" /etc/ssh/sshd_config; then 
+	sed -i 's/^MaxAuthTries.*/MaxAuthTries 4/' /etc/ssh/sshd_config
+else
+    echo "MaxAuthTries 4" >> /etc/ssh/sshd_config
+fi
+
+#########################################################################################################################################
+
+# 5.2.6 Ensure SSH IgnoreRhosts is enabled (Scored)
+
+echo "[i] Enabling SSH IgnoreRhosts"
+
+if grep -q "^IgnoreRhosts" /etc/ssh/sshd_config; then 
+	sed -i 's/^IgnoreRhosts.*/IgnoreRhosts yes/' /etc/ssh/sshd_config
+else
+    echo "IgnoreRhosts yes" >> /etc/ssh/sshd_config
+fi
+
+#########################################################################################################################################
+
+# 5.2.7 Ensure SSH HostbasedAuthentication is disabled (Scored)
+
+echo "[i] Disabling SSH HostbasedAuthentication"
+
+if grep -q "^HostbasedAuthentication" /etc/ssh/sshd_config; then 
+	sed -i 's/^HostbasedAuthentication.*/HostbasedAuthentication no/' /etc/ssh/sshd_config
+else
+    echo "HostbasedAuthentication no" >> /etc/ssh/sshd_config
+fi
+
+#########################################################################################################################################
+
+# 5.2.8 Ensure SSH root login is disabled (Scored)
+
+echo "[i] Disabling SSH root login"
+
+if grep -q "^PermitRootLogin" /etc/ssh/sshd_config; then 
+	sed -i 's/^PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+else
+    echo "PermitRootLogin no" >> /etc/ssh/sshd_config
+fi
+
+#########################################################################################################################################
+
+# Ensure SSH PermitEmptyPasswords is disabled (Scored)
+
+echo "[i] Disabling SSH PermitEmptyPasswords"
+
+if grep -q "^PermitEmptyPasswords" /etc/ssh/sshd_config; then 
+	sed -i 's/^PermitEmptyPasswords.*/PermitEmptyPasswords no/' /etc/ssh/sshd_config
+else
+    echo "PermitEmptyPasswords no" >> /etc/ssh/sshd_config
+fi
+
+#########################################################################################################################################
+
+# 5.2.10 Ensure SSH PermitUserEnvironment is disabled (Scored)
+
+echo "[i] Disabling SSH PermitUserEnvironment"
+
+if grep -q "^PermitUserEnvironment" /etc/ssh/sshd_config; then 
+	sed -i 's/^PermitUserEnvironment.*/PermitUserEnvironment no/' /etc/ssh/sshd_config
+else
+    echo "PermitUserEnvironment no" >> /etc/ssh/sshd_config
+fi
+
+#########################################################################################################################################
+
+# 5.2.11 Ensure only approved MAC algorithms are used (Scored)
+
+echo "[i] Ensuring only approved MAC algorithms are used"
+
+if grep -q "^MACs" /etc/ssh/sshd_config; then 
+	sed -i 's/^MACs.*/MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com/' /etc/ssh/sshd_config
+else
+    echo "MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com" >> /etc/ssh/sshd_config
+fi
+
+#########################################################################################################################################
+
+# 5.2.12 Ensure SSH Idle Timeout Interval is configured (Scored)
+
+echo "[i] Configuring the SSH Idle Timeout Interval"
+
+if grep -q "^ClientAliveInterval" /etc/ssh/sshd_config; then 
+	sed -i 's/^ClientAliveInterval.*/ClientAliveInterval 300/' /etc/ssh/sshd_config
+else
+    echo "ClientAliveInterval 300" >> /etc/ssh/sshd_config
+fi
+
+if grep -q "^ClientAliveCountMax" /etc/ssh/sshd_config; then 
+	sed -i 's/^ClientAliveCountMax.*/ClientAliveCountMax 0/' /etc/ssh/sshd_config
+else
+    echo "ClientAliveCountMax 0" >> /etc/ssh/sshd_config
+fi
+
+#########################################################################################################################################
+
+# 5.2.13 Ensure SSH LoginGraceTime is set to one minute or less (Scored)
+
+echo "[i] Setting SSH LoginGraceTime to 1 minute"
+
+if grep -q "^LoginGraceTime" /etc/ssh/sshd_config; then 
+	sed -i 's/^LoginGraceTime.*/LoginGraceTime 60/' /etc/ssh/sshd_config
+else
+    echo "LoginGraceTime 60" >> /etc/ssh/sshd_config
+fi
+
+#########################################################################################################################################
+
+# 5.2.14 Ensure SSH access is limited (Scored)
+
+# This will need to be manually set by the system administrator as it will be unique per organisation/system
+
+#########################################################################################################################################
+
+# 5.2.15 Ensure SSH warning banner is configured (Scored)
+
+echo "[i] Setting SSH warning banner"
+
+if grep -q "^Banner" /etc/ssh/sshd_config; then 
+	sed -i 's/^Banner.*/Banner /etc/issue.net/' /etc/ssh/sshd_config
+else
+    echo "Banner /etc/issue.net" >> /etc/ssh/sshd_config
+fi
+
+#########################################################################################################################################
+
+
+
+#########################################################################################################################################
+
+
+
+#########################################################################################################################################
+
+
+
+#########################################################################################################################################
+
+
+
+#########################################################################################################################################
+
+
+
+#########################################################################################################################################
+
+
+
+#########################################################################################################################################
+
+
+
+#########################################################################################################################################
+
+
 
 #########################################################################################################################################
 
