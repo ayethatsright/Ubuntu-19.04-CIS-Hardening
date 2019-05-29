@@ -551,27 +551,50 @@ systemctl disable nis
 
 #########################################################################################################################################
 
+# 2.3.1 Ensure NIS Client is not installed (Scored)
 
+echo "[i] Uninstalling NIS client"
 
-#########################################################################################################################################
-
-
-
-#########################################################################################################################################
-
-
+apt remove -y nis
 
 #########################################################################################################################################
 
+# 2.3.2 Ensure rsh client is not installed (Scored)
 
+echo "[i] Uninstalling the rsh client"
+
+apt remove -y rsh-client rsh-redone-client
 
 #########################################################################################################################################
 
+# 2.3.3 Ensure talk client is not installed (Scored)
 
+echo "[i] Uninstalling the talk client"
+
+apt remove -y talk
 
 #########################################################################################################################################
 
+# 2.3.4 Ensure telnet client is not installed (Scored)
 
+echo "[i] Uninstalling the telnet client"
+
+apt remove -y telnet
+
+#########################################################################################################################################
+
+# 2.3.5 Ensure LDAP client is not installed (Scored)
+
+echo "[i] Uninstalling the LDAP client"
+
+apt remove -y ldap-utils
+
+#########################################################################################################################################
+
+# 3.1.1 Ensure IP forwarding is disabled (Scored)
+# 3.1.2 Ensure packet redirect sending is disabled (Scored)
+
+# This are only required if the system is to act as a host only.  If needed, run the workstation_cis_hardening_level1_scored_HOSTONLY.sh script to apply these controls
 
 #########################################################################################################################################
 
