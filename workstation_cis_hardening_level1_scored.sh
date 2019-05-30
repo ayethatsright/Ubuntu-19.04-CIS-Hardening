@@ -1143,70 +1143,358 @@ fi
 
 #########################################################################################################################################
 
+# 5.3.1 Ensure password creation requirements are configured (Scored)
 
+echo "[i] Installing the Privileged Access Management Password Quality module"
 
-#########################################################################################################################################
+apt install -y libpam-pwquality
 
+echo "[i] Setting password policies to align with CIS guidance"
+echo "[i] If you have different password policy requirements, you will need to set these yourself"
 
+if grep -q "pam_pwquality.so" /etc/pam.d/common-password; then 
+	sed -i 's/.*pam_pwquality.so.*/password requisite pam_pwquality.so retry=3/' /etc/pam.d/common-password
+else
+    echo "password requisite pam_pwquality.so retry=3" >> /etc/pam.d/common-password
+fi
 
-#########################################################################################################################################
+if grep -q "^minlen" /etc/security/pwquality.conf; then 
+	sed -i 's/^minlen.*/minlen = 14/' /etc/security/pwquality.conf
+else
+    echo "minlen = 14" >> /etc/security/pwquality.conf
+fi
 
+if grep -q "^dcredit" /etc/security/pwquality.conf; then 
+	sed -i 's/^dcredit.*/dcredit = -1/' /etc/security/pwquality.conf
+else
+    echo "dcredit = -1" >> /etc/security/pwquality.conf
+fi
 
+if grep -q "^ucredit" /etc/security/pwquality.conf; then 
+	sed -i 's/^ucredit.*/ucredit = -1/' /etc/security/pwquality.conf
+else
+    echo "ucredit = -1" >> /etc/security/pwquality.conf
+fi
 
-#########################################################################################################################################
+if grep -q "^ocredit" /etc/security/pwquality.conf; then 
+	sed -i 's/^ocredit.*/ocredit = -1/' /etc/security/pwquality.conf
+else
+    echo "ocredit = -1" >> /etc/security/pwquality.conf
+fi
 
-
-
-#########################################################################################################################################
-
-
-
-#########################################################################################################################################
-
-
-
-#########################################################################################################################################
-
-
-
-#########################################################################################################################################
-
-
-
-#########################################################################################################################################
-
-
-
-#########################################################################################################################################
-
-
-
-#########################################################################################################################################
-
-
-
-#########################################################################################################################################
-
-
-
-#########################################################################################################################################
-
-
+if grep -q "^lcredit" /etc/security/pwquality.conf; then 
+	sed -i 's/^lcredit.*/lcredit = -1/' /etc/security/pwquality.conf
+else
+    echo "lcredit = -1" >> /etc/security/pwquality.conf
+fi
 
 #########################################################################################################################################
 
+# 5.3.2 Ensure lockout for failed password attempts is configured (Scored)
 
+echo "[i] Configuring lockout for failed password attempts to 5"
+
+if grep -q "pam_tally2.so" /etc/pam.d/common-auth; then 
+	sed -i 's/.*pam_tally2.so.*/auth required pam_tally2.so onerr=fail audit silent deny=5 unlock_time=900/' /etc/pam.d/common-auth
+else
+    echo "auth required pam_tally2.so onerr=fail audit silent deny=5 unlock_time=900" >> /etc/pam.d/common-auth
+fi
+
+#########################################################################################################################################
+
+# 5.3.3 Ensure password reuse is limited (Scored)
+
+echo "[i] Limiting password reuse to the last 5 passwords"
+
+if grep -q "pam_pwhistory.so" /etc/pam.d/common-password; then 
+	sed -i 's/.*pam_pwhistory.so.*/password required pam_pwhistory.so remember=5/' /etc/pam.d/common-password
+else
+    echo "password required pam_pwhistory.so remember=5" >> /etc/pam.d/common-password
+fi
 
 #########################################################################################################################################
 
+# 5.3.4 Ensure password hashing algorithm is SHA-512 (Scored)
 
+echo "[i] Setting the password hashing algorithm to SHA-512"
+
+if grep -q "pam_unix.so" /etc/pam.d/common-password; then 
+	sed -i 's/.*pam_unix.so.*/password [success=1 default=ignore] pam_unix.so sha512/' /etc/pam.d/common-password
+else
+    echo "password [success=1 default=ignore] pam_unix.so sha512" >> /etc/pam.d/common-password
+fi
 
 #########################################################################################################################################
 
+# 5.4.1.1 Ensure password expiration is 365 days or less (Scored)
 
+echo "[i] Setting password expiry at 365 days"
+
+if grep -q "PASS_MAX_DAYS" /etc/login.defs; then
+	sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS 365/' /etc/login.defs
+else
+	echo "PASS_MAX_DAYS 90" >> /etc/login.defs
+fi
 
 #########################################################################################################################################
 
+# 5.4.1.2 Ensure minimum days between password changes is 7 or more (Scored)
 
+echo "[i] Setting the minimum days between password changes to 7"
+
+if grep -q "PASS_MIN_DAYS" /etc/login.defs; then
+	sed -i 's/^PASS_MIN_DAYS.*/PASS_MIN_DAYS 7/' /etc/login.defs
+else
+	echo "PASS_MIN_DAYS 7" >> /etc/login.defs
+fi
 
 #########################################################################################################################################
+
+# 5.4.1.3 Ensure password expiration warning days is 7 or more (Scored)
+
+echo "[i] Setting password expiration warning to 7 days"
+
+if grep -q "PASS_WARN_AGE" /etc/login.defs; then
+	sed -i 's/^PASS_WARN_AGE.*/PASS_WARN_AGE 7/' /etc/login.defs
+else
+	echo "PASS_WARN_AGE 7" >> /etc/login.defs
+fi
+
+#########################################################################################################################################
+
+# 5.4.1.4 Ensure inactive password lock is 30 days or less (Scored)
+
+echo "[i] Locking passwords after 30 days of inactivity"
+
+useradd -D -f 30
+
+#########################################################################################################################################
+
+# 5.4.1.5 Ensure all users last password change date is in the past (Scored)
+
+# This is a manual task.  Run the following commands and confirm for each user:
+
+# cat/etc/shadow | cut -d: -f1
+# <list of users>
+# chage --list <user>
+# Last Change			: <date>
+
+#########################################################################################################################################
+
+# 5.4.2 Ensure system accounts are non-login (Scored)
+
+# This is a manual task.
+
+# Run the following audit task to identify users which have interactive login privs which shouldn't:
+
+# egrep -v "^\+" /etc/passwd | awk -F: '($1!="root" && $1!="sync" && $1!="shutdown" && $1!="halt" && $3<1000 && $7!="/usr/sbin/nologin" && $7!="/bin/false") {print}'
+
+# for user in `awk -F: '($1!="root" && $3 < 1000) {print $1 }' /etc/passwd`; do passwd -S $user | awk -F ' ' '($2!="L") {print $1}'; done
+
+# To remediate, set the shell for all necessary accounts identified by the audit script to /usr/sbin/nologin by running the following command:
+
+# usermod -s /usr/sbin/nologin <user>
+# passwd -l <user>
+
+#########################################################################################################################################
+
+# 5.4.3 Ensure default group for the root account is GID 0 (Scored)
+
+echo "[i] Setting the default group for root to GID 0"
+
+usermod -g 0 root
+
+#########################################################################################################################################
+
+# 5.4.4 Ensure default user umask is 027 or more restrictive (Scored)
+
+echo "[i] Setting default user umask to 027"
+
+umask 027
+
+#########################################################################################################################################
+
+# 5.6 Ensure access to the su command is restricted (Scored)
+
+echo "[i] Restricting access to the su command"
+
+if grep -q "pam_wheel.so" /etc/pam.d/su; then
+	sed -i 's/.*pam_wheel.so.*/auth required pam_wheel.so/' /etc/pam.d/su
+else
+	echo "auth required pam_wheel.so" >> /etc/pam.d/su
+fi
+
+# An administrator will need to create a comma separated list of users in the sudo statement in the /etc/group file:
+# sudo:x:10:root,<user list>
+
+#########################################################################################################################################
+
+# 6.1.2 Ensure permissions on /etc/passwd are configured (Scored)
+
+echo "[i] Setting correct permissions on /etc/passwd"
+
+chown root:root /etc/passwd
+chmod 644 /etc/passwd
+
+#########################################################################################################################################
+
+# 6.1.3 Ensure permissions on /etc/shadow are configured (Scored)
+
+echo "[i] Setting correct permissions on /etc/shadow"
+
+chown root:shadow /etc/shadow
+chmod o-rwx,g-wx /etc/shadow
+
+#########################################################################################################################################
+
+# 6.1.4 Ensure permissions on /etc/group are configured (Scored)
+
+echo "[i] Setting correct permissions on /etc/group"
+
+chown root:root /etc/group
+chmod 644 /etc/group
+
+#########################################################################################################################################
+
+# 6.1.5 Ensure permissions on /etc/gshadow are configured (Scored)
+
+echo "[i] Setting correct permissions on /etc/gshadow"
+
+chown root:shadow /etc/gshadow
+chmod o-rwx,g-rw /etc/gshadow
+
+#########################################################################################################################################
+
+# 6.1.6 Ensure permission on /etc/passwd- are configured (Scored)
+
+echo "[i] Setting correct permissions on /etc/passwd-"
+
+chown root:root /etc/passwd-
+chmod u-x,go-wx /etc/passwd-
+
+#########################################################################################################################################
+
+# 6.1.7 Ensure permissions on /etc/shadow- are configured (Scored)
+
+echo "[i] Setting correct permissions on /etc/shadow-"
+
+chown root:shadow /etc/shadow-
+chmod o-rwx,g-rw /etc/shadow-
+
+#########################################################################################################################################
+
+# 6.1.8 Ensure permissions on /etc/group- are configured (Scored)
+
+echo "[i] Setting correct permissions on /etc/group-"
+
+chown root:root /etc/group-
+chmod u-x,go-wx /etc/group-
+
+#########################################################################################################################################
+
+# 6.1.9 Ensure permissions on /etc/gshadow- are configured (Scored)
+
+echo "[i] Setting correct permissions on /etc/gshadow-"
+
+chown root:shadow /etc/gshadow-
+chmod o-rwx,g-rw /etc/gshadow-
+
+#########################################################################################################################################
+
+# 6.1.10 Ensure no world writable files 
+
+#########################################################################################################################################
+
+# 6.1.11
+
+#########################################################################################################################################
+
+# 6.1.12
+
+#########################################################################################################################################
+
+# 6.2.1
+
+#########################################################################################################################################
+
+# 6.2.2
+
+#########################################################################################################################################
+
+# 6.2.3
+
+#########################################################################################################################################
+
+# 6.2.4
+
+#########################################################################################################################################
+
+# 6.2.5
+
+#########################################################################################################################################
+
+# 6.2.6
+
+#########################################################################################################################################
+
+# 6.2.7
+
+#########################################################################################################################################
+
+# 6.2.8
+
+#########################################################################################################################################
+
+# 6.2.9
+
+#########################################################################################################################################
+
+# 6.2.10
+
+#########################################################################################################################################
+
+# 6.2.11
+
+#########################################################################################################################################
+
+# 6.2.12
+
+#########################################################################################################################################
+
+# 6.2.13
+
+#########################################################################################################################################
+
+# 6.2.14
+
+#########################################################################################################################################
+
+# 6.2.15
+
+#########################################################################################################################################
+
+# 6.2.16
+
+#########################################################################################################################################
+
+# 6.2.17
+
+#########################################################################################################################################
+
+# 6.2.18
+
+#########################################################################################################################################
+
+# 6.2.19
+
+#########################################################################################################################################
+
+# 6.2.20
+
+#########################################################################################################################################
+
+# Rebooting system to ensure all changes take effect
+
+read -r -p "[i] System will now reboot to ensure all changes take effect. Press ENTER to continue..."
+
+sudo reboot
