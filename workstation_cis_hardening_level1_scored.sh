@@ -1405,25 +1405,11 @@ chmod o-rwx,g-rw /etc/gshadow-
 
 #########################################################################################################################################
 
-
-# Ensuring system is up to date
-
-apt update
-apt upgrade --assume-yes
-
 # Removing any redundant packages
 
 apt autoremove
 
 # Rebooting system to ensure all changes take effect
-
-# Setting the desktop background to AFSL one requested by Jamie O'Connor
-
-wget https://cdn-images-1.medium.com/max/1200/1*Y0UYuGcFGSCfs5Eexafq6A.png
-mkdir /home/share
-mv 1*Y0UYuGcFGSCfs5Eexafq6A.png /home/share/wallpaper.png
-
-su - "$USER" -c "gsettings set org.gnome.desktop.background picture-uri file:///home/share/wallpaper.png"
 
 read -r -p "[i] System will now reboot to ensure all changes take effect. Press ENTER to continue..."
 
