@@ -17,60 +17,57 @@ echo "[I] Beginning hardening script now"
 
 #########################################################################################################################################
 
-echo "[i] Beginning hardening process"
-
 # 1.1.1.1 Ensure mounting of cramfs filesystems is disabled (Scored)
-
-echo "[i] Disabling the mounting of cramfs filesystems"
-echo "install cramfs /bin/true" > /etc/modprobe.d/cramfs.conf
-rmmod cramfs
-sleep 1
+# NOT ENABLED BY DEFAULT ON UBUNTU
+#echo "[i] Disabling the mounting of cramfs filesystems"
+#echo "install cramfs /bin/true" > /etc/modprobe.d/cramfs.conf
+#rmmod cramfs
+#sleep 1
 
 #########################################################################################################################################
 
 # 1.1.1.2 Ensure mounting of freevxfs filesystems is disabled (Scored)
-
-echo "[I] Disabling the mounting of freevxfs filesystems"
-echo "install freevxfs /bin/true" > /etc/modprobe.d/freevxfs.conf
-rmmod freevxfs
-sleep 1
+# NOT ENABLED BY DEFAULT ON UBUNTU
+#echo "[I] Disabling the mounting of freevxfs filesystems"
+#echo "install freevxfs /bin/true" > /etc/modprobe.d/freevxfs.conf
+#rmmod freevxfs
+#sleep 1
 
 #########################################################################################################################################
 
 # 1.1.1.3 Ensure mounting of jffs2 filesystems is disabled (Scored)
-
-echo "[I] Disabling the mounting of jffs2 filesystems"
-echo "install jffs2 /bin/true" > /etc/modprobe.d/jffs2.conf
-rmmod jffs2
-sleep 1
+# NOT ENABLED BY DEFAULT ON UBUNTU
+#echo "[I] Disabling the mounting of jffs2 filesystems"
+#echo "install jffs2 /bin/true" > /etc/modprobe.d/jffs2.conf
+#rmmod jffs2
+#sleep 1
 
 #########################################################################################################################################
 
 # 1.1.1.4 Ensure mounting of hfs filesystems is disabled (Scored)
-
-echo "[I] Disabling the mounting of hfs filesystems"
-echo "install hfs /bin/true" > /etc/modprobe.d/hfs.conf
-rmmod hfs
-sleep 1
+# NOT ENABLED BY DEFAULT ON UBUNTU
+#echo "[I] Disabling the mounting of hfs filesystems"
+#echo "install hfs /bin/true" > /etc/modprobe.d/hfs.conf
+#rmmod hfs
+#sleep 1
 
 #########################################################################################################################################
 
 # 1.1.1.5 Ensure mounting of hfsplus filesystems is disabled (Scored)
-
-echo "[I] Disabling the mounting of hfsplus filesystems"
-echo "install hfsplus /bin/true" > /etc/modprobe.d/hfsplus.conf
-rmmod hfsplus
-sleep 1
+# NOT ENABLED BY DEFAULT ON UBUNTU
+#echo "[I] Disabling the mounting of hfsplus filesystems"
+#echo "install hfsplus /bin/true" > /etc/modprobe.d/hfsplus.conf
+#rmmod hfsplus
+#sleep 1
 
 #########################################################################################################################################
 
-
 # 1.1.1.6 Ensure mounting of udf filesystems is disabled (Scored)
-
-echo "[I] Disabling the mounting of udf filesystems"
-echo "install udf /bin/true" > /etc/modprobe.d/udf.conf
-rmmod udf
-sleep 1
+# NOT ENABLED BY DEFAULT ON UBUNTU
+#echo "[I] Disabling the mounting of udf filesystems"
+#echo "install udf /bin/true" > /etc/modprobe.d/udf.conf
+#rmmod udf
+#sleep 1
 
 #########################################################################################################################################
 
@@ -141,7 +138,7 @@ df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -typ
 
 echo "[i] Installing AIDE"
 
-apt-get install --assume-yes aide aide-common && aideinit
+apt-get install --assume-yes aide aide-common && aideinit &
 
 echo "[i] Generating AIDE config file"
 
@@ -286,12 +283,11 @@ sysctl -w kernel.randomize_va_space=2
 #########################################################################################################################################
 
 # 1.5.4 Ensure prelink is disabled (Scored)
-
-echo "[i] Restoring the prelink binaries to normal"
-prelink -ua
-
-echo "[i] Uninstalling prelink"
-apt-get remove prelink
+# PRELINK NOT INSTALLED ON UBUNTU
+#echo "[i] Restoring the prelink binaries to normal"
+#prelink -ua
+#echo "[i] Uninstalling prelink"
+#apt-get remove prelink
 
 #########################################################################################################################################
 
@@ -365,9 +361,9 @@ echo "banner-message-text='Unauthorised use of this system is an offence under t
 #########################################################################################################################################
 
 # 2.1.10 Ensure xinetd is not enabled (Scored)
-
-echo "[i] Disabling xinetd"
-systemctl disable xinetd
+# NOT ENABLED IN UBUNTU
+#echo "[i] Disabling xinetd"
+#systemctl disable xinetd
 
 #########################################################################################################################################
 
@@ -379,6 +375,10 @@ apt-get remove openbsd-inetd
 #########################################################################################################################################
 
 # 2.2.1.2 Ensure ntp is configured
+
+echo "[i] Installing NTP"
+
+apt install --assume-yes ntp
 
 echo "[i] Configuring ntp"
 
@@ -412,6 +412,10 @@ fi
 
 # 2.2.1.3 Ensure chrony is configured (Scored)
 
+echo "[i] Installing chrony"
+
+apt install --assume-yes chrony
+
 echo "[i] Configuring chrony"
 
 # Adding NTP servers for the UK
@@ -440,84 +444,84 @@ systemctl disable avahi-daemon
 #########################################################################################################################################
 
 # 2.2.5 Ensure DHCP Server is not enabled (Scored)
+# Not enabled in Ubuntu
+#echo "[i] Disabling DHCP Server"
 
-echo "[i] Disabling DHCP Server"
-
-systemctl disable isc-dhcp-server
-systemctl disable isc-dhcp-server6
+#systemctl disable isc-dhcp-server
+#systemctl disable isc-dhcp-server6
 
 #########################################################################################################################################
 
 # 2.2.6 Ensure LDAP server is not enabled (Scored)
+# Not enabled in Ubuntu
+#echo "[i] Disabling LDAP server"
 
-echo "[i] Disabling LDAP server"
-
-systemctl disable slapd
+#systemctl disable slapd
 
 #########################################################################################################################################
 
 # 2.2.7 Ensure NFS and RPC are not enabled (Scored)
+# Not enabled in Ubuntu
+#echo "[i] Disabling NFS and RPC"
 
-echo "[i] Disabling NFS and RPC"
-
-systemctl disable nfs-server
-systemctl disable rpcbind
+#systemctl disable nfs-server
+#systemctl disable rpcbind
 
 #########################################################################################################################################
 
 # 2.2.8 Ensure DNS Server is not enabled (Scored)
+# Not enabled in Ubuntu
+#echo "[i] Disabling DNS Server"
 
-echo "[i] Disabling DNS Server"
-
-systemctl disable bind9
+#systemctl disable bind9
 
 #########################################################################################################################################
 
 # 2.2.9 Ensure FTP Server is not enabled (Scored)
+# Not enabled in Ubuntu
+#echo "[i] Disabling FTP Server"
 
-echo "[i] Disabling FTP Server"
-
-systemctl disable vsftpd
+#systemctl disable vsftpd
 
 #########################################################################################################################################
 
 # 2.2.10 Ensure HTTP Server is not enabled (Scored)
+# Not enabled in Ubuntu
+#echo "[i] Disabling HTTP Server"
 
-echo "[i] Disabling HTTP Server"
-
-systemctl disable apache2
+#systemctl disable apache2
 
 #########################################################################################################################################
 
 # 2.2.11 Ensure IMAP and POP3 server is not enabled (Scored)
+# Not enabled in Ubuntu
+#echo "[i] Disabling IMAP and POP3 Server"
 
-echo "[i] Disabling IMAP and POP3 Server"
-
-systemctl disable dovecot
+#systemctl disable dovecot
 
 #########################################################################################################################################
 
 # 2.2.12 Ensure Samba is not enabled (Scored)
+# Not enabled in Ubuntu
+#echo "[i] Disabling Samba"
 
-echo "[i] Disabling Samba"
-
-systemctl disable smbd
+#systemctl disable smbd
 
 #########################################################################################################################################
 
 # 2.2.13 Ensure HTTP Proxy Server is not enabled (Scored)
+# Not enabled in Ubuntu
+#echo "[i] Disabling HTTP Proxy Server"
 
-echo "[i] Disabling HTTP Proxy Server"
-
-systemctl disable squid
+#systemctl disable squid
 
 #########################################################################################################################################
 
 # 2.2.14 Ensure SNMP Server is not enabled (Scored)
+# Not enabled in Ubuntu
+#echo "[i] Disabling SNMP Server"
 
-echo "[i] Disabling SNMP Server"
-
-systemctl disable snmpd
+#systemctl disable snmpd
 
 #########################################################################################################################################
 
@@ -807,9 +811,11 @@ echo "[i] Flushing iptable rules"
 iptables -F
 
 echo "[i] Adding default deny firewall policy"
-iptables -P INPUT DROP
-iptables -P OUTPUT DROP 
+
+#iptables -P INPUT DROP
+#iptables -P OUTPUT DROP 
 iptables -P FORWARD DROP 
+iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 echo "[i] Configuring loopback traffic rules within firewall policy"
 iptables -A INPUT -i lo -j ACCEPT
@@ -955,8 +961,6 @@ chmod og-rwx /etc/cron.d
 
 echo "[i] Restricting at/cron to authorised users"
 
-rm /etc/cron.deny
-rm /etc/at.deny
 touch /etc/cron.allow
 touch /etc/at.allow
 chmod og-rwx /etc/cron.allow
@@ -1401,99 +1405,22 @@ chmod o-rwx,g-rw /etc/gshadow-
 
 #########################################################################################################################################
 
-# 6.1.10 Ensure no world writable files 
 
-#########################################################################################################################################
+# Ensuring system is up to date
 
-# 6.1.11
+apt update
+apt upgrade --assume-yes
 
-#########################################################################################################################################
+# Removing any redundant packages
 
-# 6.1.12
-
-#########################################################################################################################################
-
-# 6.2.1
-
-#########################################################################################################################################
-
-# 6.2.2
-
-#########################################################################################################################################
-
-# 6.2.3
-
-#########################################################################################################################################
-
-# 6.2.4
-
-#########################################################################################################################################
-
-# 6.2.5
-
-#########################################################################################################################################
-
-# 6.2.6
-
-#########################################################################################################################################
-
-# 6.2.7
-
-#########################################################################################################################################
-
-# 6.2.8
-
-#########################################################################################################################################
-
-# 6.2.9
-
-#########################################################################################################################################
-
-# 6.2.10
-
-#########################################################################################################################################
-
-# 6.2.11
-
-#########################################################################################################################################
-
-# 6.2.12
-
-#########################################################################################################################################
-
-# 6.2.13
-
-#########################################################################################################################################
-
-# 6.2.14
-
-#########################################################################################################################################
-
-# 6.2.15
-
-#########################################################################################################################################
-
-# 6.2.16
-
-#########################################################################################################################################
-
-# 6.2.17
-
-#########################################################################################################################################
-
-# 6.2.18
-
-#########################################################################################################################################
-
-# 6.2.19
-
-#########################################################################################################################################
-
-# 6.2.20
-
-#########################################################################################################################################
+apt autoremove
 
 # Rebooting system to ensure all changes take effect
+
+# Setting the desktop background to AFSL one requested by Jamie O'Connor
+
+wget https://cdn-images-1.medium.com/max/1200/1*Y0UYuGcFGSCfs5Eexafq6A.png
+gsettings set org.gnome.desktop.background picture-uri file://./1*Y0UYuGcFGSCfs5Eexafq6A.png
 
 read -r -p "[i] System will now reboot to ensure all changes take effect. Press ENTER to continue..."
 
