@@ -4,4 +4,6 @@ Hardening guides and scripts for Ubuntu 18.04 LTS which is compliant with the CI
 
 The 'Level 1 - scored' script is now completed and has been tested on a HP Pavillion running Ubuntu 19.04 with no issues.
 
+The 'Level 1 - scored - HOST ONLY' script is also complete and tested.
+
 I'll finish the other scripts when I get chance.
