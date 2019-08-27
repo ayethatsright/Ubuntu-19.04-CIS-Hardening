@@ -9,11 +9,14 @@
 #THIS SECTIONS CONFIRMS THAT THE SCRIPT HAS BEEN RUN WITH SUDO
 
 if [[ $UID -ne 0 ]]; then
-	echo "Need to run this script as root (with sudo)"
+	echo "Need to run this script as root (with sudo su -)"
 	exit 1
 fi
 
 echo "[I] Beginning hardening script now"
+
+apt update
+apt upgrade
 
 #########################################################################################################################################
 
@@ -1411,4 +1414,4 @@ apt autoremove
 
 read -r -p "[i] System will now reboot to ensure all changes take effect. Press ENTER to continue..."
 
-sudo reboot
+reboot
