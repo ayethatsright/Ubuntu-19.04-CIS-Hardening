@@ -107,6 +107,7 @@ echo "[i] Home partition example: /dev/xvda1"
 read -p "[?] Enter home partition: " HOME_PARTITION
 
 if [ -b $HOME_PARTITION ]
+
 then
 
     LINEHOME="$HOME_PARTITION /home ext4 rw,relatime,nodev,data=ordered 0 0"
@@ -192,6 +193,7 @@ fi
 echo "[i] Checking if the root user already has a password set"
 
 if ! grep ^root:[*\!]: /etc/shadow
+
 then
 	echo "[i] root user already has a password set"
 	echo "[i] no further action required"
