@@ -21,56 +21,56 @@ apt upgrade
 #########################################################################################################################################
 
 # 1.1.1.1 Ensure mounting of cramfs filesystems is disabled (Scored)
-# NOT ENABLED BY DEFAULT ON UBUNTU
-#echo "[i] Disabling the mounting of cramfs filesystems"
-#echo "install cramfs /bin/true" > /etc/modprobe.d/cramfs.conf
-#rmmod cramfs
-#sleep 1
+
+echo "[i] Disabling the mounting of cramfs filesystems"
+echo "install cramfs /bin/true" > /etc/modprobe.d/cramfs.conf
+rmmod cramfs
+sleep 1
 
 #########################################################################################################################################
 
 # 1.1.1.2 Ensure mounting of freevxfs filesystems is disabled (Scored)
-# NOT ENABLED BY DEFAULT ON UBUNTU
-#echo "[I] Disabling the mounting of freevxfs filesystems"
-#echo "install freevxfs /bin/true" > /etc/modprobe.d/freevxfs.conf
-#rmmod freevxfs
-#sleep 1
+
+echo "[I] Disabling the mounting of freevxfs filesystems"
+echo "install freevxfs /bin/true" > /etc/modprobe.d/freevxfs.conf
+rmmod freevxfs
+sleep 1
 
 #########################################################################################################################################
 
 # 1.1.1.3 Ensure mounting of jffs2 filesystems is disabled (Scored)
-# NOT ENABLED BY DEFAULT ON UBUNTU
-#echo "[I] Disabling the mounting of jffs2 filesystems"
-#echo "install jffs2 /bin/true" > /etc/modprobe.d/jffs2.conf
-#rmmod jffs2
-#sleep 1
+
+echo "[I] Disabling the mounting of jffs2 filesystems"
+echo "install jffs2 /bin/true" > /etc/modprobe.d/jffs2.conf
+rmmod jffs2
+sleep 1
 
 #########################################################################################################################################
 
 # 1.1.1.4 Ensure mounting of hfs filesystems is disabled (Scored)
-# NOT ENABLED BY DEFAULT ON UBUNTU
-#echo "[I] Disabling the mounting of hfs filesystems"
-#echo "install hfs /bin/true" > /etc/modprobe.d/hfs.conf
-#rmmod hfs
-#sleep 1
+
+echo "[I] Disabling the mounting of hfs filesystems"
+echo "install hfs /bin/true" > /etc/modprobe.d/hfs.conf
+rmmod hfs
+sleep 1
 
 #########################################################################################################################################
 
 # 1.1.1.5 Ensure mounting of hfsplus filesystems is disabled (Scored)
-# NOT ENABLED BY DEFAULT ON UBUNTU
-#echo "[I] Disabling the mounting of hfsplus filesystems"
-#echo "install hfsplus /bin/true" > /etc/modprobe.d/hfsplus.conf
-#rmmod hfsplus
-#sleep 1
+
+echo "[I] Disabling the mounting of hfsplus filesystems"
+echo "install hfsplus /bin/true" > /etc/modprobe.d/hfsplus.conf
+rmmod hfsplus
+sleep 1
 
 #########################################################################################################################################
 
 # 1.1.1.6 Ensure mounting of udf filesystems is disabled (Scored)
-# NOT ENABLED BY DEFAULT ON UBUNTU
-#echo "[I] Disabling the mounting of udf filesystems"
-#echo "install udf /bin/true" > /etc/modprobe.d/udf.conf
-#rmmod udf
-#sleep 1
+
+echo "[I] Disabling the mounting of udf filesystems"
+echo "install udf /bin/true" > /etc/modprobe.d/udf.conf
+rmmod udf
+sleep 1
 
 #########################################################################################################################################
 
@@ -135,6 +135,32 @@ grep -F "$LINEDEVSHM" /etc/fstab || echo "$LINEDEVSHM" | tee -a /etc/fstab > /de
 echo "[i] Ensuring that sticky bit is set on all world-writable directories"
 
 df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 2>/dev/null | xargs chmod a+t
+
+#########################################################################################################################################
+
+# 1.3.2 Ensure filesystem integrity is regularly checked
+
+echo "[i] Creating a cron job to regularly check filesystem integrity"
+
+LINEAIDECRON="0 5 * * * /usr/bin/aide.wrapper --config /etc/aide/aide.conf --check"
+AIDECRONFILE=/home/tmp.cron
+
+crontab -l -u root 2>/dev/null
+
+if [ $? -eq 0 ]
+then
+    crontab -u root -l > $AIDECRONFILE
+else
+    touch $AIDECRONFILE
+fi
+
+grep -qF "$LINEAIDECRON" "$AIDECRONFILE" || echo "$LINEAIDECRON" | tee -a "$AIDECRONFILE" > /dev/null
+
+crontab -u root $AIDECRONFILE
+
+rm $AIDECRONFILE
+
+sleep 1
 
 #########################################################################################################################################
 
@@ -220,6 +246,13 @@ DUMPABLEFILE=/etc/sysctl.conf
 grep -qF "$DUMPABLELINE" "$DUMPABLEFILE" || echo "$DUMPABLELINE" | tee -a "$DUMPABLEFILE" > /dev/null
 
 sysctl -w fs.suid_dumpable=0
+
+#########################################################################################################################################
+
+
+# 1.5.2 Ensure XD/NX support is enabled
+
+# Need to configure the bios manually for this
 
 #########################################################################################################################################
 
@@ -552,11 +585,44 @@ apt remove -y ldap-utils
 #########################################################################################################################################
 
 # 3.1.1 Ensure IP forwarding is disabled (Scored)
-# 3.1.2 Ensure packet redirect sending is disabled (Scored)
 
-# This are only required if the system is to act as a host only.  If needed, run the 'workstation_cis_hardening_level1_scored_HOSTONLY.sh' script to apply these controls
+echo "[i] Disabling IP forwarding"
+
+if grep -q "^net.ipv4.ip_forward.*" /etc/sysctl.conf; then
+	sed '/^net.ipv4.ip_forward.*/d' /etc/sysctl.conf
+	echo "net.ipv4.ip_forward = 0" >> /etc/sysctl.conf
+else
+	echo "net.ipv4.ip_forward = 0" >> /etc/sysctl.conf
+fi
+
+sysctl -w net.ipv4.ip forward=0
+sysctl -w net.ipv4.route.flush=1
 
 #########################################################################################################################################
+
+# 3.1.2 Ensure packet redirect sending is disabled (Scored)
+
+echo "[i] Disabling packet redirect sending"
+
+if grep -q "^net.ipv4.conf.all.send redirects.*" /etc/sysctl.conf; then
+	sed '/^net.ipv4.conf.all.send redirects.*/d' /etc/sysctl.conf
+	echo "net.ipv4.conf.all.send redirects = 0" >> /etc/sysctl.conf
+else
+	echo "net.ipv4.conf.all.send redirects = 0" >> /etc/sysctl.conf
+fi
+
+if grep -q "^net.ipv4.conf.default.send.redirects.*" /etc/sysctl.conf; then
+	sed '/^net.ipv4.conf.default.send redirects.*/d' /etc/sysctl.conf
+	echo "net.ipv4.conf.default.send redirects = 0" >> /etc/sysctl.conf
+else
+	echo "net.ipv4.conf.default.send redirects = 0" >> /etc/sysctl.conf
+fi
+
+sysctl -w net.ipv4.conf.all.send_redirects=0 
+sysctl -w net.ipv4.conf.default.send_redirects=0 
+sysctl -w net.ipv4.route.flush=1
+
+##########################################################################################################################################
 
 # 3.2.1 Ensure source routed packets are not accepted (Scored)
 
@@ -712,6 +778,79 @@ sysctl -w net.ipv4.tcp_syncookies=1
 sysctl -w net.ipv4.route.flush=1
 
 #########################################################################################################################################
+
+# 3.3.1 Ensure IPv6 router advertisements are not accepted (Scored)
+
+echo "[i] Ensuring IPv6 router advertisement are not accepted"
+
+
+
+net.ipv6.conf.all.accept_ra = 0
+
+
+
+
+echo "[i] Disabling IP forwarding"
+
+if grep -q "^net.ipv4.ip_forward.*" /etc/sysctl.conf; then
+	sed '/^net.ipv4.ip_forward.*/d' /etc/sysctl.conf
+	echo "net.ipv4.ip_forward = 0" >> /etc/sysctl.conf
+else
+	echo "net.ipv4.ip_forward = 0" >> /etc/sysctl.conf
+fi
+
+sysctl -w net.ipv4.ip forward=0
+sysctl -w net.ipv4.route.flush=1
+
+#########################################################################################################################################
+
+# 3.1.2 Ensure packet redirect sending is disabled (Scored)
+
+echo "[i] Disabling packet redirect sending"
+
+if grep -q "^net.ipv4.conf.all.send redirects.*" /etc/sysctl.conf; then
+	sed '/^net.ipv4.conf.all.send redirects.*/d' /etc/sysctl.conf
+	echo "net.ipv4.conf.all.send redirects = 0" >> /etc/sysctl.conf
+else
+	echo "net.ipv4.conf.all.send redirects = 0" >> /etc/sysctl.conf
+fi
+
+if grep -q "^net.ipv4.conf.default.send.redirects.*" /etc/sysctl.conf; then
+	sed '/^net.ipv4.conf.default.send redirects.*/d' /etc/sysctl.conf
+	echo "net.ipv4.conf.default.send redirects = 0" >> /etc/sysctl.conf
+else
+	echo "net.ipv4.conf.default.send redirects = 0" >> /etc/sysctl.conf
+fi
+
+sysctl -w net.ipv4.conf.all.send_redirects=0 
+sysctl -w net.ipv4.conf.default.send_redirects=0 
+sysctl -w net.ipv4.route.flush=1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # 3.4.1 Ensure TCP Wrappers is installed (Scored)
 
@@ -1243,18 +1382,133 @@ useradd -D -f 30
 
 # 5.4.2 Ensure system accounts are non-login (Scored)
 
-# This is a manual task.
+# identify system accounts that can be used to login with an interactive shell
+# using UID to identify system accounts
+# if system account is configured with /usr/bin/nologin then ignore
+# root is a system account but is deliberately excluded because login with an interactive shell is still required for root
 
-# Run the following audit task to identify users which have interactive login privs which shouldn't:
+ 
 
-# egrep -v "^\+" /etc/passwd | awk -F: '($1!="root" && $1!="sync" && $1!="shutdown" && $1!="halt" && $3<1000 && $7!="/usr/sbin/nologin" && $7!="/bin/false") {print}'
+function isinteger()
+{
+  # expects a single argument
+  # integer can optionally be prefixed with a + or -
+  # sign prefixed
+  if [[ $1 =~ [-+][0-9]+ ]]; then
+    return 0
+  fi
+  # sign optionally prefixed
+  if [[ $1 =~ [-+0-9][0-9]* ]]; then
+    return 0
+  fi
+  return 1
+}
 
-# for user in `awk -F: '($1!="root" && $3 < 1000) {print $1 }' /etc/passwd`; do passwd -S $user | awk -F ' ' '($2!="L") {print $1}'; done
+ 
 
-# To remediate, set the shell for all necessary accounts identified by the audit script to /usr/sbin/nologin by running the following command:
+# get SYS_UID_MIN and SYS_UID_MAX values
 
-# usermod -s /usr/sbin/nologin <user>
-# passwd -l <user>
+ 
+
+logindefs="/etc/login.defs"
+
+ 
+
+if [ ! -f "$logindefs" ]; then
+  echo "Exiting because $logindefs cannot be found"
+  exit 1
+fi
+
+ 
+
+# expected format is SYS_UID_MIN<tab(s)&|space(s)><signed integer>
+# assuming just 1 entry
+
+ 
+
+sysuidmin=$(grep SYS_UID_MIN $logindefs | awk '{print $2}')
+
+ 
+
+if [ -z "$sysuidmin" ]; then
+  echo "Exiting because SYS_UID_MIN value not found in $logindefs"
+  exit 2
+fi
+
+ 
+
+echo "SYS_UID_MIN=$sysuidmin"
+
+ 
+
+isinteger $sysuidmin
+
+ 
+
+if [ $? -ne 0 ]; then
+  echo "Exiting because SYS_UID_MIN value is not a number"
+  exit 3
+fi
+
+ 
+
+# expected format is SYS_UID_MAX<tab(s)&|space(s)><signed integer>
+# assuming just 1 entry
+
+ 
+
+sysuidmax=$(grep SYS_UID_MAX $logindefs | awk '{print $2}')
+
+ 
+
+if [ -z "$sysuidmax" ]; then
+  echo "Exiting because SYS_UID_MAX value not found in $logindefs"
+  exit 4
+fi
+
+ 
+
+echo "SYS_UID_MAX=$sysuidmax"
+
+ 
+
+isinteger $sysuidmax
+
+ 
+
+if [ $? -ne 0 ]; then
+  echo "Exiting because SYS_UID_MAX value is not a number"
+  exit 5
+fi
+
+ 
+
+rootusr="root"
+
+ 
+
+logins=$(getent passwd | awk -F: '$1!=$rootusr && $3>=$sysuidmin && $3<=$sysuidmax && $7!="/usr/sbin/nologin" {print $1}')
+
+ 
+
+if [ -z "$logins" ]; then
+  echo "Exiting because no system accounts with an interative shell"
+  exit 99
+fi
+
+ 
+
+echo "System accounts with an interactive shell: $logins"
+
+ 
+
+# disable password and remove interactive shell for each system account
+
+ 
+
+for usr in $logins; do
+  #usermod -Ls /usr/bin/nologin $usr
+done
 
 #########################################################################################################################################
 
