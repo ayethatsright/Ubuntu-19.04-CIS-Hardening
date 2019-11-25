@@ -249,7 +249,6 @@ sysctl -w fs.suid_dumpable=0
 
 #########################################################################################################################################
 
-
 # 1.5.2 Ensure XD/NX support is enabled
 
 # Need to configure the bios manually for this
@@ -1620,7 +1619,7 @@ chmod o-rwx,g-rw /etc/gshadow-
 
 echo "[i] Installing AIDE"
 
-apt-get install --assume-yes aide aide-common && aideinit &
+apt install --assume-yes aide aide-common && aideinit &
 
 echo "[i] Generating AIDE config file"
 
