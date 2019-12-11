@@ -21,56 +21,50 @@ apt upgrade
 #########################################################################################################################################
 
 # 1.1.1.1 Ensure mounting of cramfs filesystems is disabled (Scored)
-# NOT ENABLED BY DEFAULT ON UBUNTU
-#echo "[i] Disabling the mounting of cramfs filesystems"
-#echo "install cramfs /bin/true" > /etc/modprobe.d/cramfs.conf
-#rmmod cramfs
-#sleep 1
+
+echo "[i] Disabling the mounting of cramfs filesystems"
+echo "install cramfs /bin/true" > /etc/modprobe.d/cramfs.conf
+sleep 1
 
 #########################################################################################################################################
 
 # 1.1.1.2 Ensure mounting of freevxfs filesystems is disabled (Scored)
-# NOT ENABLED BY DEFAULT ON UBUNTU
-#echo "[I] Disabling the mounting of freevxfs filesystems"
-#echo "install freevxfs /bin/true" > /etc/modprobe.d/freevxfs.conf
-#rmmod freevxfs
-#sleep 1
+
+echo "[I] Disabling the mounting of freevxfs filesystems"
+echo "install freevxfs /bin/true" > /etc/modprobe.d/freevxfs.conf
+sleep 1
 
 #########################################################################################################################################
 
 # 1.1.1.3 Ensure mounting of jffs2 filesystems is disabled (Scored)
-# NOT ENABLED BY DEFAULT ON UBUNTU
-#echo "[I] Disabling the mounting of jffs2 filesystems"
-#echo "install jffs2 /bin/true" > /etc/modprobe.d/jffs2.conf
-#rmmod jffs2
-#sleep 1
+
+echo "[I] Disabling the mounting of jffs2 filesystems"
+echo "install jffs2 /bin/true" > /etc/modprobe.d/jffs2.conf
+sleep 1
 
 #########################################################################################################################################
 
 # 1.1.1.4 Ensure mounting of hfs filesystems is disabled (Scored)
-# NOT ENABLED BY DEFAULT ON UBUNTU
-#echo "[I] Disabling the mounting of hfs filesystems"
-#echo "install hfs /bin/true" > /etc/modprobe.d/hfs.conf
-#rmmod hfs
-#sleep 1
+
+echo "[I] Disabling the mounting of hfs filesystems"
+echo "install hfs /bin/true" > /etc/modprobe.d/hfs.conf
+sleep 1
 
 #########################################################################################################################################
 
 # 1.1.1.5 Ensure mounting of hfsplus filesystems is disabled (Scored)
-# NOT ENABLED BY DEFAULT ON UBUNTU
-#echo "[I] Disabling the mounting of hfsplus filesystems"
-#echo "install hfsplus /bin/true" > /etc/modprobe.d/hfsplus.conf
-#rmmod hfsplus
-#sleep 1
+
+echo "[I] Disabling the mounting of hfsplus filesystems"
+echo "install hfsplus /bin/true" > /etc/modprobe.d/hfsplus.conf
+sleep 1
 
 #########################################################################################################################################
 
 # 1.1.1.6 Ensure mounting of udf filesystems is disabled (Scored)
-# NOT ENABLED BY DEFAULT ON UBUNTU
-#echo "[I] Disabling the mounting of udf filesystems"
-#echo "install udf /bin/true" > /etc/modprobe.d/udf.conf
-#rmmod udf
-#sleep 1
+
+echo "[I] Disabling the mounting of udf filesystems"
+echo "install udf /bin/true" > /etc/modprobe.d/udf.conf
+sleep 1
 
 #########################################################################################################################################
 
