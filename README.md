@@ -14,3 +14,5 @@ This script should run as `sudo` and it will install some libraries onto the sys
 sudo ./auditing_script.sh ^C
 ```
 The machine will then forced to reboot and after rebooting, there will be a file called `audit_results.txt` generated on the same directory as `auditing script.sh`
+
+Example : https://github.com/zyairelai/Ubuntu-19.04-CIS-Hardening/blob/master/sample_results/audit_results.txt
