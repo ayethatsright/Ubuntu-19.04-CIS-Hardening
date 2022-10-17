@@ -1,0 +1,46 @@
+The system time and date when auditing was performed: 
+Mon 17 Oct 2022 01:21:03 AM PDT
+Auditing was performed on the following machine: 
+ubuntu
+The following non-system user accounts exist on the machine: 
+ubuntu
+[i] Ensuring that nodev & nosuid are set on the /tmp partition
+The system time and date when auditing was performed: 
+Mon 17 Oct 2022 01:24:36 AM PDT
+Auditing was performed on the following machine: 
+ubuntu
+The following non-system user accounts exist on the machine: 
+ubuntu
+[i] Ensuring that nodev & nosuid are set on the /tmp partition
+[FAILED] nosuid is NOT set on /tmp
+[FAILED] nodev is NOT set on /tmp
+[i] Ensuring that nodev, nosuid & noexec are set on the /var/tmp partition
+[FAILED] nodev is NOT set on /var/tmp
+[FAILED] nosuid is NOT set on /var/tmp
+[FAILED] noexec is NOT set on /var/tmp
+[i] Ensuring that the nodev option is set on the /home partition
+[FAILED] nodev is NOT set on /home
+[i] Ensuring that nodev, nosuid & noexec is set on the /dev/shm partition
+[PASSED] nodev is set on /dev/shm
+[PASSED] nosuid is set on /dev/shm
+[FAILED] nodev is NOT set on /dev/shm
+[i] Ensuring that sticky bit is set on all world-writable directories
+[PASSED] Sticky bit is set on all world writable directories
+[i] Confirming the correct permissions are set for the bootloader config
+[FAILED] UID is NOT set at 0 in the config
+[FAILED] GID is NOT set at 0 in the config
+[PASSED] 'group' is NOT being gratned permissions in the config
+[PASSED] 'other' is NOT being gratned permissions in the config
+[i] The superuser account for the grub bootloader is: 
+[i] Confirming the grub superuser account has an encrypted password set: 
+[FAILED] The grub superuser password is blank
+[i] Checking if the root user has a password set
+root:!:19282:0:99999:7:::
+[PASSED] A root password has been set
+[i] Ensuring core dumps are restricted
+[FAILED] the hard core value is NOT correctly configured
+[FAILED] the sysctl dumpable value is NOT correctly set at 0
+[FAILED] the fs.suid_dumpable value is NOT correctly configured
+[i] Ensuring address space layout randomization (ASLR) is enabled
+[FAILED] ASLR is NOT currently enabled
+[FAILED] ASLR is NOT configured to always run
