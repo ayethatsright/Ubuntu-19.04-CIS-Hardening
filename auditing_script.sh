@@ -41,7 +41,7 @@ var=$(mount | grep /tmp)
 if [[ $var == *"nosuid"* ]]; then
 	echo "[PASSED] nosuid is set on /tmp" >> ./audit_results.txt
 else
-	echo "[FAILED] nosuid is NOT set on /tmp" >> >> ./audit_results.txt
+	echo "[FAILED] nosuid is NOT set on /tmp" >> ./audit_results.txt
 fi
 
 if [[ $var == *"nodev"* ]]; then
